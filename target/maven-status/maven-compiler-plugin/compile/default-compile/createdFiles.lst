@@ -7,6 +7,7 @@ org/example/socialhub/servlet/SocialInsightsServlet.class
 org/example/socialhub/servlet/SocialOAuthCallbackServlet.class
 org/example/socialhub/jobs/SocialMetricsJob.class
 org/example/socialhub/service/impl/SocialMetricsServiceImpl$1.class
+org/example/socialhub/service/impl/SocialAccountServiceImpl.class
 org/example/socialhub/service/SocialAccountService.class
 org/example/socialhub/service/impl/ActivityLogServiceImpl.class
 org/example/socialhub/jobs/SocialPublishJob.class
