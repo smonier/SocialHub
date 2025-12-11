@@ -1,0 +1,36 @@
+###############################################################################
+# Social Hub Publication Rules
+# 
+# These rules automatically manage the social:status property when social posts
+# are published or unpublished in Jahia.
+###############################################################################
+
+package org.example.socialhub.rules
+
+import org.jahia.services.content.rules.*
+import org.jahia.services.content.*
+import org.slf4j.Logger
+
+expander rules.dsl
+
+global Logger logger
+global org.example.socialhub.rules.SocialHubRulesService socialHubService
+
+
+###############################################################################
+# Rule: Mark Social Post as Scheduled When j:published Property Set
+# 
+# When a socialnt:post has j:published property set (or changed) in default workspace,
+# automatically set its social:status to "scheduled" so it can be picked up by 
+# the publishing job.
+###############################################################################
+rule "Mark social post as scheduled when j:published is set"
+    salience 1
+    when
+        A node is published
+            - the node has the type socialnt:post
+            - not in operation import
+    then
+        > socialHubService.markAsScheduled(node);
+        > logger.info("[RULES] Rule 'Mark social post as scheduled when j:published is set' fired for node: " + node.getPath());
+end

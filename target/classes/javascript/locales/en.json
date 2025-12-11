@@ -1,0 +1,166 @@
+{
+  "label": "Social Hub",
+  "app": {
+    "title": "Social Hub",
+    "description": "Manage your social media posts, view schedules, and test API connections.",
+    "refresh": "Refresh data"
+  },
+  "accordion": {
+    "title": "Content Tools"
+  },
+  "tabs": {
+    "posts": "Posts",
+    "calendar": "Calendar",
+    "insights": "Insights",
+    "accounts": "Accounts",
+    "proxyTest": "Proxy Test",
+    "activityLog": "Activity Log"
+  },
+  "accounts": {
+    "title": "Account Connections",
+    "description": "Connect Facebook Pages, Instagram Business accounts, and LinkedIn organizations used by your scheduled posts.",
+    "helper": "You only enter App ID + App Secret in the provider consoles. Page IDs and access tokens are obtained during OAuth and stored as socialnt:account.",
+    "buttons": {
+      "connect": "Connect",
+      "refresh": "Refresh accounts"
+    },
+    "connect": {
+      "facebook": {
+        "title": "Facebook Pages",
+        "body": "Opens Facebook login, lists managed Pages, then stores the selected Page access token.",
+        "scopes": "Scopes: pages_show_list, pages_manage_posts, pages_read_engagement"
+      },
+      "instagram": {
+        "title": "Instagram Business",
+        "body": "Requires the Instagram Business account that is linked to a Facebook Page; fetches the IG business ID and token.",
+        "scopes": "Scopes: instagram_basic, instagram_content_publish, pages_show_list"
+      },
+      "linkedin": {
+        "title": "LinkedIn",
+        "body": "Signs in to LinkedIn and returns either your member URN or the organizations you can administer for company posts.",
+        "scopes": "Scopes: openid, profile, email, w_member_social, r_organization_social, rw_organization_admin"
+      }
+    },
+    "list": {
+      "title": "Connected accounts",
+      "loading": "Loading accounts...",
+      "error": "Unable to load accounts",
+      "empty": "No accounts stored yet. Connect a platform above to create socialnt:account entries.",
+      "platform": "Platform",
+      "label": "Label",
+      "handle": "Handle",
+      "pageId": "Page ID / URN",
+      "token": "Access token",
+      "refreshToken": "Refresh token",
+      "expiry": "Expiry",
+      "status": "Status",
+      "active": "Active",
+      "inactive": "Inactive",
+      "path": "JCR path"
+    }
+  },
+  "posts": {
+    "loading": "Loading social posts...",
+    "error": "Failed to load social posts",
+    "empty": "No social posts found.",
+    "emptyDescription": "Create social posts in Jahia to see them here.",
+    "status": {
+      "draft": "Draft",
+      "scheduled": "Scheduled",
+      "published": "Published",
+      "failed": "Failed"
+    },
+    "columns": {
+      "contentStatus": "Content Status",
+      "socialStatus": "Social Status",
+      "title": "Title",
+      "platforms": "Platforms",
+      "scheduledAt": "Scheduled",
+      "publishedAt": "Published"
+    }
+  },
+  "calendar": {
+    "loading": "Loading scheduled posts...",
+    "error": "Failed to load calendar data",
+    "empty": "No scheduled posts.",
+    "emptyDescription": "Posts with scheduled dates will appear here.",
+    "days": {
+      "sunday": "Sun",
+      "monday": "Mon",
+      "tuesday": "Tue",
+      "wednesday": "Wed",
+      "thursday": "Thu",
+      "friday": "Fri",
+      "saturday": "Sat"
+    },
+    "months": {
+      "january": "January",
+      "february": "February",
+      "march": "March",
+      "april": "April",
+      "may": "May",
+      "june": "June",
+      "july": "July",
+      "august": "August",
+      "september": "September",
+      "october": "October",
+      "november": "November",
+      "december": "December"
+    }
+  },
+  "proxyTest": {
+    "title": "Social API Proxy Test",
+    "description": "Test the social media proxy by making authenticated requests to external APIs.",
+    "method": "HTTP Method",
+    "path": "Relative Path",
+    "pathPlaceholder": "/v1/me",
+    "target": "Target API",
+    "body": "Request Body (JSON)",
+    "bodyPlaceholder": "Optional JSON payload",
+    "sendRequest": "Send Request",
+    "response": {
+      "success": "Success",
+      "error": "Error",
+      "status": "Status",
+      "duration": "Duration",
+      "data": "Response Data"
+    }
+  },
+  "activityLog": {
+    "title": "Activity Log",
+    "description": "Track all publishing attempts, successes, failures, and status changes for social posts.",
+    "empty": "No activity logs yet.",
+    "refresh": "Refresh",
+    "flushLogs": "Flush Logs",
+    "confirmFlush": "Are you sure you want to delete all activity logs? This action cannot be undone.",
+    "columns": {
+      "action": "Action",
+      "post": "Post",
+      "platform": "Platform",
+      "message": "Message",
+      "timestamp": "Time"
+    }
+  },
+  "insights": {
+    "loading": "Loading posts...",
+    "publishedPosts": "Published Posts",
+    "post": "post",
+    "posts": "posts",
+    "facebookPosts": "Facebook posts",
+    "noPosts": "No published posts yet",
+    "selectPost": "Select a Post",
+    "selectPostDescription": "Choose a published post from the list to view its insights and analytics data.",
+    "fetchingData": "Fetching insights...",
+    "metrics": "Performance Metrics",
+    "impressions": "Impressions",
+    "reach": "Reach",
+    "clicks": "Clicks",
+    "likes": "Likes",
+    "comments": "Comments",
+    "shares": "Shares",
+    "engagement": "Engagement",
+    "engagementRate": "Engagement Rate",
+    "noData": "No insights available",
+    "noDataDescription": "Insights data may not be available yet. Try again later or check if the post ID is correct."
+  }
+}

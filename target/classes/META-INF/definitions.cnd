@@ -1,0 +1,70 @@
+<'social'='http://www.example.com/social/1.0'>
+<'jnt'='http://www.jahia.org/jahia/nt/1.0'>
+<'jmix'='http://www.jahia.org/jahia/mix/1.0'>
+<'socialmix'='http://www.example.com/social/mix/1.0'>
+<'socialnt'='http://www.example.com/social/nt/1.0'>
+
+[socialmix:component] > jmix:droppableContent, jmix:accessControllableContent mixin
+
+// =================================================================
+// Social Media Account Configuration
+// =================================================================
+[socialnt:account] > jnt:content, jmix:editorialContent, jmix:structuredContent, socialmix:component
+ - social:platform (string) mandatory indexed=no
+ - social:label (string) indexed=tokenized
+ - social:handle (string) indexed=tokenized
+ - social:accountId (string) indexed=no
+ - social:pageId (string) indexed=no
+ - social:email (string) indexed=no
+ - social:accessToken (string) indexed=no
+ - social:pageToken (string) indexed=no
+ - social:refreshToken (string) indexed=no
+ - social:tokenExpiry (date) indexed=no
+ - social:isActive (boolean) = true indexed=no
+
+
+// =================================================================
+// Social Media Post
+// =================================================================
+[socialnt:post] > jnt:content, mix:title, jmix:editorialContent, jmix:structuredContent, socialmix:component
+ - social:title (string) mandatory indexed=tokenized
+ - social:message (string) mandatory indexed=tokenized
+ - social:platform (string, choicelist[resourceBundle]) indexed=untokenized < 'instagram', 'facebook', 'linkedin'
+ - social:scheduledAt (date) indexed=no
+ - social:externalId (string) indexed=no
+ - social:linkUrl (string) indexed=no
+ - social:imageRefs (weakreference, picker[type='image']) multiple indexed=no < 'jmix:image'
+ - social:status (string, choicelist[resourceBundle]) = 'draft' < 'draft', 'scheduled', 'published'
+
+// =================================================================
+// Social Metrics (Analytics Snapshot)
+// =================================================================
+[socialnt:metrics] > jnt:content, jmix:structuredContent, socialmix:component
+ - social:platform (string) indexed=untokenized
+ - social:externalId (string) indexed=no
+ - social:capturedAt (date) indexed=no
+ - social:impressions (long) indexed=no
+ - social:clicks (long) indexed=no
+ - social:likes (long) indexed=no
+ - social:comments (long) indexed=no
+ - social:shares (long) indexed=no
+
+// =================================================================
+// Convenience Type: Post with Embedded Metrics
+// =================================================================
+[socialnt:postWithMetrics] > socialnt:post, socialmix:component
+ + * (socialnt:metrics) = socialnt:metrics multiple
+
+// =================================================================
+// Activity Log Entry
+// =================================================================
+[socialnt:activityLog] > jnt:content, jmix:structuredContent, socialmix:component orderable
+ - social:timestamp (date) indexed=no mandatory
+ - social:action (string) indexed=untokenized mandatory < 'publish_attempt', 'publish_success', 'publish_failure', 'schedule', 'draft', 'rule_fired'
+ - social:postId (string) indexed=no
+ - social:postTitle (string) indexed=tokenized
+ - social:platform (string) indexed=untokenized
+ - social:status (string) indexed=untokenized
+ - social:message (string) indexed=tokenized
+ - social:errorMessage (string) indexed=tokenized
+ - social:userId (string) indexed=no

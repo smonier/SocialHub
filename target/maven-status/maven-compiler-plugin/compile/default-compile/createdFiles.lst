@@ -1,0 +1,17 @@
+org/example/socialhub/service/impl/SocialMetricsServiceImpl$MetricsData.class
+org/example/socialhub/rules/SocialHubRulesService.class
+org/example/socialhub/service/SocialPostService.class
+org/example/socialhub/servlet/SocialOAuthCallbackServlet$PathInfo.class
+org/example/socialhub/rules/SocialHubGlobalObject.class
+org/example/socialhub/servlet/SocialInsightsServlet.class
+org/example/socialhub/servlet/SocialOAuthCallbackServlet.class
+org/example/socialhub/jobs/SocialMetricsJob.class
+org/example/socialhub/service/impl/SocialMetricsServiceImpl$1.class
+org/example/socialhub/service/SocialAccountService.class
+org/example/socialhub/service/impl/ActivityLogServiceImpl.class
+org/example/socialhub/jobs/SocialPublishJob.class
+org/example/socialhub/servlet/SocialProxyServlet.class
+org/example/socialhub/service/impl/SocialMetricsServiceImpl.class
+org/example/socialhub/service/impl/SocialPostServiceImpl.class
+org/example/socialhub/service/ActivityLogService.class
+org/example/socialhub/service/SocialMetricsService.class

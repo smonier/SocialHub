@@ -1,0 +1,95 @@
+Manifest-Version: 1.0
+Bnd-LastModified: 1765395153087
+Build-Jdk-Spec: 17
+Bundle-Category: jahia-module
+Bundle-Description: This is the custom ReactJS module (SocialHub UI Exte
+ nsion) for running on a Jahia server.
+Bundle-DocURL: http://www.jahia.com
+Bundle-ManifestVersion: 2
+Bundle-Name: SocialHub UI Extension
+Bundle-SymbolicName: SocialHub
+Bundle-Vendor: Jahia Solutions Group SA
+Bundle-Version: 1.0.0.SNAPSHOT
+Created-By: Apache Maven Bundle Plugin 5.1.9
+Dynamic-ImportPackage: *
+Implementation-Title: SocialHub UI Extension
+Implementation-URL: http://www.jahia.com
+Implementation-Vendor: Jahia Solutions Group SA
+Implementation-Version: 1.0.0-SNAPSHOT
+Import-Package: org.jahia.services.content,org.jahia.services.content.ru
+ les,org.slf4j;version="[1.7,2)",javax.crypto,javax.crypto.spec,javax.jc
+ r;version="[2.0,3)",javax.jcr.nodetype;version="[2.0,3)",javax.jcr.quer
+ y;version="[2.0,3)",javax.servlet;version="[3.1,4)",javax.servlet.http;
+ version="[3.1,4)",org.apache.commons.codec.binary;version="[1.15,2)",or
+ g.apache.commons.io;version="[1.4,2)",org.jahia.bin.filters,org.jahia.o
+ sgi,org.jahia.services.content.nodetypes,org.jahia.services.scheduler,o
+ rg.jahia.services.usermanager,org.jahia.settings,org.json;version="[202
+ 31013.0,20231014)",org.quartz,org.apache.naming.java,org.jahia.defaults
+ .config.spring,org.jahia.exceptions,org.jahia.services
+Jahia-Download-Sources-Available: true
+Jahia-GroupId: org.jahia.se.modules
+Jahia-Module-Type: module
+Jahia-Required-Version: 8.2.0.0
+Jahia-Source-Control-Connection: scm:git:git@github.com:Jahia/jahia-priv
+ ate.git/jahia-modules/SocialHub
+Jahia-Source-Control-DeveloperConnection: scm:git:git@github.com:Jahia/j
+ ahia-private.git/jahia-modules/SocialHub
+Jahia-Source-Control-Tag: JAHIA_8_2_0_0
+Jahia-Source-Folders: /Users/stephane/Runtimes/0.Modules/SocialHub
+Jahia-Static-Resources: /css,/fonts,/javascript,/icons,/img
+Provide-Capability: com.jahia.modules.dependencies;moduleIdentifier=Soci
+ alHub;moduleVersion:Version="1.0.0.SNAPSHOT",com.jahia.modules.dependen
+ cies;moduleIdentifier="SocialHub UI Extension";moduleVersion:Version="1
+ .0.0.SNAPSHOT",com.jahia.services.content;nodetypes:List<String>="socia
+ lmix:component,socialnt:account,socialnt:activityLog,socialnt:metrics,s
+ ocialnt:post,socialnt:postWithMetrics",osgi.service;objectClass:List<St
+ ring>="org.example.socialhub.rules.SocialHubRulesService";uses:="org.ex
+ ample.socialhub.rules",osgi.service;objectClass:List<String>="org.examp
+ le.socialhub.service.ActivityLogService";uses:="org.example.socialhub.s
+ ervice",osgi.service;objectClass:List<String>="org.example.socialhub.se
+ rvice.SocialAccountService";uses:="org.example.socialhub.service",osgi.
+ service;objectClass:List<String>="org.example.socialhub.service.SocialM
+ etricsService";uses:="org.example.socialhub.service",osgi.service;objec
+ tClass:List<String>="org.example.socialhub.service.SocialPostService";u
+ ses:="org.example.socialhub.service",osgi.service;objectClass:List<Stri
+ ng>="org.jahia.bin.filters.AbstractServletFilter";uses:="org.jahia.bin.
+ filters",osgi.service;objectClass:List<String>="org.jahia.services.cont
+ ent.rules.ModuleGlobalObject";uses:="org.jahia.services.content.rules"
+Require-Capability: com.jahia.services.content;filter:="(nodetypes=jmix:
+ accessControllableContent)",com.jahia.services.content;filter:="(nodety
+ pes=jmix:contributeMode)",com.jahia.services.content;filter:="(nodetype
+ s=jmix:droppableContent)",com.jahia.services.content;filter:="(nodetype
+ s=jmix:editorialContent)",com.jahia.services.content;filter:="(nodetype
+ s=jmix:image)",com.jahia.services.content;filter:="(nodetypes=jmix:stru
+ cturedContent)",com.jahia.services.content;filter:="(nodetypes=jnt:cont
+ ent)",com.jahia.services.content;filter:="(nodetypes=jnt:contentFolder)
+ ",com.jahia.services.content;filter:="(nodetypes=jnt:folder)",com.jahia
+ .services.content;filter:="(nodetypes=jnt:module)",com.jahia.services.c
+ ontent;filter:="(nodetypes=jnt:modules)",com.jahia.services.content;fil
+ ter:="(nodetypes=jnt:portletFolder)",com.jahia.services.content;filter:
+ ="(nodetypes=jnt:translation)",com.jahia.services.content;filter:="(nod
+ etypes=mix:title)",osgi.service;filter:="(objectClass=org.example.socia
+ lhub.rules.SocialHubRulesService)";effective:=active,osgi.service;filte
+ r:="(objectClass=org.example.socialhub.service.ActivityLogService)";eff
+ ective:=active,osgi.service;filter:="(objectClass=org.example.socialhub
+ .service.SocialAccountService)";effective:=active,osgi.service;filter:=
+ "(objectClass=org.jahia.services.content.JCRTemplate)";effective:=activ
+ e,osgi.service;filter:="(objectClass=org.jahia.services.scheduler.Sched
+ ulerService)";effective:=active,osgi.extender;filter:="(&(osgi.extender
+ =osgi.component)(version>=1.4.0)(!(version>=2.0.0)))",osgi.ee;filter:="
+ (&(osgi.ee=JavaSE)(version=11))"
+Service-Component: OSGI-INF/org.example.socialhub.jobs.SocialMetricsJob.
+ xml,OSGI-INF/org.example.socialhub.jobs.SocialPublishJob.xml,OSGI-INF/o
+ rg.example.socialhub.rules.SocialHubGlobalObject.xml,OSGI-INF/org.examp
+ le.socialhub.rules.SocialHubRulesService.xml,OSGI-INF/org.example.socia
+ lhub.service.impl.ActivityLogServiceImpl.xml,OSGI-INF/org.example.socia
+ lhub.service.impl.SocialAccountServiceImpl.xml,OSGI-INF/org.example.soc
+ ialhub.service.impl.SocialMetricsServiceImpl.xml,OSGI-INF/org.example.s
+ ocialhub.service.impl.SocialPostServiceImpl.xml,OSGI-INF/org.example.so
+ cialhub.servlet.SocialInsightsServlet.xml,OSGI-INF/org.example.socialhu
+ b.servlet.SocialOAuthCallbackServlet.xml,OSGI-INF/org.example.socialhub
+ .servlet.SocialProxyServlet.xml
+Specification-Title: SocialHub UI Extension
+Specification-Vendor: Jahia Solutions Group SA
+Specification-Version: 1.0.0-SNAPSHOT
+Tool: Bnd-6.3.1.202206071316

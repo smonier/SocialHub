@@ -1,0 +1,163 @@
+{
+  "label": "Social Hub",
+  "app": {
+    "title": "Centre Social",
+    "description": "Gérez vos publications sur les réseaux sociaux, consultez les plannings et testez les connexions API.",
+    "refresh": "Rafraîchir les données"
+  },
+  "accordion": {
+    "title": "Outils de contenu"
+  },
+  "tabs": {
+    "posts": "Publications",
+    "calendar": "Calendrier",
+    "insights": "Statistiques",
+    "accounts": "Comptes",
+    "proxyTest": "Test Proxy",
+    "activityLog": "Journal d'activité"
+  },
+  "accounts": {
+    "title": "Connexion des comptes",
+    "description": "Connectez les pages Facebook, les comptes Instagram Business et les organisations LinkedIn utilisés par vos publications planifiées.",
+    "helper": "Seuls l'App ID et l'App Secret se trouvent dans la console du fournisseur. Les Page ID et tokens sont récupérés via OAuth et stockés dans socialnt:account.",
+    "buttons": {
+      "connect": "Connecter",
+      "refresh": "Rafraîchir les comptes"
+    },
+    "connect": {
+      "facebook": {
+        "title": "Pages Facebook",
+        "body": "Ouvre la connexion Facebook, liste les pages gérées puis enregistre le token d'accès de la page sélectionnée.",
+        "scopes": "Scopes : pages_show_list, pages_manage_posts, pages_read_engagement"
+      },
+      "instagram": {
+        "title": "Instagram Business",
+        "body": "Nécessite le compte Instagram Business lié à une page Facebook ; récupère l'ID business IG et le token.",
+        "scopes": "Scopes : instagram_basic, instagram_content_publish, pages_show_list"
+      },
+      "linkedin": {
+        "title": "LinkedIn",
+        "body": "Se connecte à LinkedIn et renvoie soit votre URN membre soit les organisations que vous administrez pour les publications entreprise.",
+        "scopes": "Scopes : openid, profile, email, w_member_social, r_organization_social, rw_organization_admin"
+      }
+    },
+    "list": {
+      "title": "Comptes connectés",
+      "loading": "Chargement des comptes...",
+      "error": "Impossible de charger les comptes",
+      "empty": "Aucun compte enregistré. Connectez une plateforme ci-dessus pour créer des entrées socialnt:account.",
+      "platform": "Plateforme",
+      "label": "Libellé",
+      "handle": "Handle",
+      "pageId": "Page ID / URN",
+      "token": "Token d'accès",
+      "refreshToken": "Refresh token",
+      "expiry": "Expiration",
+      "status": "Statut",
+      "active": "Actif",
+      "inactive": "Inactif",
+      "path": "Chemin JCR"
+    }
+  },
+  "posts": {
+    "loading": "Chargement des publications...",
+    "error": "Échec du chargement des publications",
+    "empty": "Aucune publication trouvée.",
+    "emptyDescription": "Créez des publications dans Jahia pour les voir ici.",
+    "status": {
+      "draft": "Brouillon",
+      "scheduled": "Planifié",
+      "published": "Publié",
+      "failed": "Échoué"
+    },
+    "columns": {
+      "contentStatus": "Statut contenu",
+      "socialStatus": "Statut social",
+      "title": "Titre",
+      "platforms": "Plateformes",
+      "scheduledAt": "Planifié",
+      "publishedAt": "Publié"
+    }
+  },
+  "calendar": {
+    "loading": "Chargement des publications planifiées...",
+    "error": "Échec du chargement des données du calendrier",
+    "empty": "Aucune publication planifiée.",
+    "emptyDescription": "Les publications avec des dates planifiées apparaîtront ici.",
+    "days": {
+      "sunday": "Dim",
+      "monday": "Lun",
+      "tuesday": "Mar",
+      "wednesday": "Mer",
+      "thursday": "Jeu",
+      "friday": "Ven",
+      "saturday": "Sam"
+    },
+    "months": {
+      "january": "Janvier",
+      "february": "Février",
+      "march": "Mars",
+      "april": "Avril",
+      "may": "Mai",
+      "june": "Juin",
+      "july": "Juillet",
+      "august": "Août",
+      "september": "Septembre",
+      "october": "Octobre",
+      "november": "Novembre",
+      "december": "Décembre"
+    }
+  },
+  "proxyTest": {
+    "title": "Test Proxy API Sociale",
+    "description": "Testez le proxy de médias sociaux en effectuant des requêtes authentifiées vers des API externes.",
+    "method": "Méthode HTTP",
+    "path": "Chemin relatif",
+    "target": "API cible",
+    "pathPlaceholder": "/v1/me",
+    "body": "Corps de la requête (JSON)",
+    "bodyPlaceholder": "Charge utile JSON optionnelle",
+    "sendRequest": "Envoyer la requête",
+    "response": {
+      "success": "Succès",
+      "error": "Erreur",
+      "status": "Statut",
+      "duration": "Durée",
+      "data": "Données de réponse"
+    }
+  },
+  "activityLog": {
+    "title": "Activité API récente",
+    "empty": "Aucune activité pour le moment.",
+    "emptyDescription": "Utilisez l'onglet Test Proxy pour effectuer des requêtes.",
+    "columns": {
+      "status": "Statut",
+      "method": "Méthode",
+      "path": "Chemin",
+      "statusCode": "Code",
+      "timestamp": "Heure"
+    }
+  },
+  "insights": {
+    "loading": "Chargement des publications...",
+    "publishedPosts": "Publications publiées",
+    "post": "publication",
+    "posts": "publications",
+    "facebookPosts": "publications Facebook",
+    "noPosts": "Aucune publication publiée",
+    "selectPost": "Sélectionnez une publication",
+    "selectPostDescription": "Choisissez une publication publiée dans la liste pour voir ses statistiques et données analytiques.",
+    "fetchingData": "Récupération des statistiques...",
+    "metrics": "Métriques de performance",
+    "impressions": "Impressions",
+    "reach": "Portée",
+    "clicks": "Clics",
+    "likes": "J'aime",
+    "comments": "Commentaires",
+    "shares": "Partages",
+    "engagement": "Engagement",
+    "engagementRate": "Taux d'engagement",
+    "noData": "Aucune statistique disponible",
+    "noDataDescription": "Les données statistiques peuvent ne pas être encore disponibles. Réessayez plus tard ou vérifiez si l'ID de publication est correct."
+  }
+}
