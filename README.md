@@ -301,6 +301,16 @@ Jobs only run on processing servers (cluster-safe).
    - **Proxy Test** - Test API connections
    - **Activity Log** - View request history
 
+---
+## Screenshots
+![Posts screenshot](./src/main/resources/images/socialhub-posts.png)
+![Calendar screenshot](./src/main/resources/images/socialhub-calendar.png)
+![Insights screenshot](./src/main/resources/images/socialhub-insights.png)
+![Accounts screenshot](./src/main/resources/images/socialhub-accounts.png)
+![Activity Logs screenshot](./src/main/resources/images/socialhub-activity-logs.png)
+
+---
+
 ### Publishing Posts
 
 **Via UI (planned):**
