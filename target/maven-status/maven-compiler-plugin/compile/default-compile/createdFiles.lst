@@ -13,6 +13,5 @@ org/example/socialhub/service/impl/ActivityLogServiceImpl.class
 org/example/socialhub/jobs/SocialPublishJob.class
 org/example/socialhub/servlet/SocialProxyServlet.class
 org/example/socialhub/service/impl/SocialMetricsServiceImpl.class
-org/example/socialhub/service/impl/SocialPostServiceImpl.class
 org/example/socialhub/service/ActivityLogService.class
 org/example/socialhub/service/SocialMetricsService.class

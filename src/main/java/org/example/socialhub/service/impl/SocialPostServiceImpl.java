@@ -54,9 +54,11 @@ public class SocialPostServiceImpl implements SocialPostService {
     private String facebookApiVersion = "v21.0";
     private String linkedinApiVersion = "v2";
     private String authToken = "your-api-token-here";
+    private String serverBaseUrl = "https://wonderland-jahiasales.internal.cloud.jahia.com";
     
     // Platform-specific configuration
     private String facebookPageId = "";
+    private String facebookAppSecret = "";
     private String instagramAccountId = "";
     private String linkedinOrganizationId = "";
     private String facebookPageAccessToken = "";
@@ -87,6 +89,9 @@ public class SocialPostServiceImpl implements SocialPostService {
         if (properties.get("facebookPageId") != null) {
             facebookPageId = (String) properties.get("facebookPageId");
         }
+        if (properties.get("facebookAppSecret") != null) {
+            facebookAppSecret = (String) properties.get("facebookAppSecret");
+        }
         if (properties.get("instagramAccountId") != null) {
             instagramAccountId = (String) properties.get("instagramAccountId");
         }
@@ -102,8 +107,12 @@ public class SocialPostServiceImpl implements SocialPostService {
         if (properties.get("linkedinAccessToken") != null) {
             linkedinAccessToken = (String) properties.get("linkedinAccessToken");
         }
+        if (properties.get("serverBaseUrl") != null) {
+            serverBaseUrl = (String) properties.get("serverBaseUrl");
+        }
         
         logger.info("[SERVICE] SocialPostServiceImpl activated with config:");
+        logger.info("[SERVICE]   - serverBaseUrl: {}", serverBaseUrl);
         logger.info("[SERVICE]   - facebookBaseUrl: {}", facebookBaseUrl);
         logger.info("[SERVICE]   - instagramBaseUrl: {}", instagramBaseUrl);
         logger.info("[SERVICE]   - linkedinBaseUrl: {}", linkedinBaseUrl);
@@ -185,14 +194,15 @@ public class SocialPostServiceImpl implements SocialPostService {
                                 String imagePath = imageNode.getPath();
                                 logger.info("[SERVICE] >>> Image node found: {} (type: {})", imagePath, imageNode.getPrimaryNodeType().getName());
                                 
-                                // Extract site key from post path
-                                String siteKey = extractSiteFromPath(postPath);
-                                
-                                // Construct absolute URL: https://{site}.jahia-cloud.com/files/live{path}
-                                String imageUrl = "https://" + siteKey + ".jahia-cloud.com/files/live" + imagePath;
+                                // Build proper Jahia file servlet URL
+                                // Pattern: {serverBaseUrl}/files/live{imagePath}
+                                // Example: https://wonderland-jahiasales.internal.cloud.jahia.com/files/live/sites/jsmod/files/social-posts/photo-1512106374988-c95f566d39ef
+                                // Note: Jahia file servlet handles files with or without extensions
+                                String imageUrl = serverBaseUrl + "/files/live" + imagePath;
                                 
                                 imageUrls.add(imageUrl);
                                 logger.info("[SERVICE] >>> ✓ Resolved image URL: {}", imageUrl);
+                                logger.info("[SERVICE] >>> ⚠️  IMPORTANT: Verify this URL is publicly accessible without authentication!");
                             } else {
                                 logger.warn("[SERVICE] >>> Image node not found for reference: {}", refId);
                             }
@@ -443,14 +453,29 @@ public class SocialPostServiceImpl implements SocialPostService {
                             ? facebookPageAccessToken : authToken;
                     }
                     
-                    endpoint = String.format("%s/%s/%s/feed", getPlatformBaseUrl(platform), facebookApiVersion, pageId);
-                    accessToken = pageToken;
-                    jsonPayload = buildFacebookPayload(title, message, linkUrl, imageUrls);
                     logger.info("[SERVICE] Using Facebook Page ID: {} (source: {})", pageId, fromJCR ? "JCR" : ".cfg");
                     logger.info("[SERVICE] Page Token: {}...{} (length: {})", 
-                        accessToken.length() > 10 ? accessToken.substring(0, 10) : "***",
-                        accessToken.length() > 10 ? accessToken.substring(accessToken.length() - 10) : "***",
-                        accessToken.length());
+                        pageToken.length() > 10 ? pageToken.substring(0, 10) : "***",
+                        pageToken.length() > 10 ? pageToken.substring(pageToken.length() - 10) : "***",
+                        pageToken.length());
+                    
+                    // Handle Facebook image posting
+                    if (imageUrls != null && !imageUrls.isEmpty()) {
+                        if (imageUrls.size() == 1) {
+                            // OPTION 1: Single image - use /photos endpoint
+                            logger.info("[SERVICE] Publishing Facebook post with single image");
+                            return publishFacebookSingleImage(pageId, pageToken, title, message, linkUrl, imageUrls.get(0));
+                        } else {
+                            // OPTION 2: Multiple images - upload unpublished, then create feed post
+                            logger.info("[SERVICE] Publishing Facebook post with {} images", imageUrls.size());
+                            return publishFacebookMultipleImages(pageId, pageToken, title, message, linkUrl, imageUrls);
+                        }
+                    }
+                    
+                    // No images - use /feed endpoint for text-only post
+                    endpoint = String.format("%s/%s/%s/feed", getPlatformBaseUrl(platform), facebookApiVersion, pageId);
+                    accessToken = pageToken;
+                    jsonPayload = buildFacebookPayload(title, message, linkUrl, null);
                     break;
                     
                 case "instagram":
@@ -576,6 +601,290 @@ public class SocialPostServiceImpl implements SocialPostService {
         } catch (Exception e) {
             logger.error("[SERVICE] Error publishing to platform " + platform, e);
             return null;
+        }
+    }
+    
+    /**
+     * Publish Facebook post with single image using /photos endpoint.
+     * This creates a post with one image.
+     * 
+     * @param pageId Facebook Page ID
+     * @param pageToken Page access token
+     * @param title Post title
+     * @param message Post message
+     * @param linkUrl Optional link URL
+     * @param imageUrl Image URL to post
+     * @return External post ID or null on failure
+     */
+    private String publishFacebookSingleImage(String pageId, String pageToken, String title, String message, String linkUrl, String imageUrl) {
+        try {
+            String endpoint = String.format("%s/%s/%s/photos", facebookBaseUrl, facebookApiVersion, pageId);
+            String fullMessage = title + "\n\n" + message;
+            if (linkUrl != null && !linkUrl.isEmpty()) {
+                fullMessage += "\n\n" + linkUrl;
+            }
+            
+            // Build form data payload
+            String payload = "url=" + URLEncoder.encode(imageUrl, "UTF-8") +
+                           "&message=" + URLEncoder.encode(fullMessage, "UTF-8") +
+                           "&access_token=" + URLEncoder.encode(pageToken, "UTF-8");
+            
+            // Add appsecret_proof if app secret is configured
+            if (facebookAppSecret != null && !facebookAppSecret.isEmpty()) {
+                String appsecretProof = generateAppSecretProof(pageToken, facebookAppSecret);
+                payload += "&appsecret_proof=" + appsecretProof;
+            }
+            
+            logger.info("[SERVICE] Facebook /photos endpoint: {}", endpoint);
+            logger.info("[SERVICE] Image URL: {}", imageUrl);
+            
+            URL url = new URL(endpoint);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            conn.setDoOutput(true);
+            conn.setConnectTimeout(10000);
+            conn.setReadTimeout(30000);
+            
+            try (OutputStream os = conn.getOutputStream()) {
+                byte[] input = payload.getBytes(StandardCharsets.UTF_8);
+                os.write(input, 0, input.length);
+            }
+            
+            int responseCode = conn.getResponseCode();
+            
+            if (responseCode >= 200 && responseCode < 300) {
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
+                    StringBuilder response = new StringBuilder();
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        response.append(line);
+                    }
+                    
+                    String responseBody = response.toString();
+                    logger.info("[SERVICE] Facebook /photos response: {}", responseBody);
+                    return extractExternalId(responseBody);
+                }
+            } else {
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getErrorStream(), StandardCharsets.UTF_8))) {
+                    StringBuilder errorResponse = new StringBuilder();
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        errorResponse.append(line);
+                    }
+                    logger.error("[SERVICE] Failed to publish Facebook photo: HTTP {} - {}", responseCode, errorResponse.toString());
+                }
+                return null;
+            }
+            
+        } catch (Exception e) {
+            logger.error("[SERVICE] Error publishing Facebook single image", e);
+            return null;
+        }
+    }
+    
+    /**
+     * Publish Facebook post with multiple images.
+     * Step 1: Upload each image as unpublished (published=false)
+     * Step 2: Create feed post with attached_media array
+     * 
+     * @param pageId Facebook Page ID
+     * @param pageToken Page access token
+     * @param title Post title
+     * @param message Post message
+     * @param linkUrl Optional link URL
+     * @param imageUrls List of image URLs
+     * @return External post ID or null on failure
+     */
+    private String publishFacebookMultipleImages(String pageId, String pageToken, String title, String message, String linkUrl, List<String> imageUrls) {
+        try {
+            List<String> mediaIds = new ArrayList<>();
+            
+            // Step 1: Upload each image as unpublished
+            for (int i = 0; i < imageUrls.size(); i++) {
+                String imageUrl = imageUrls.get(i);
+                logger.info("[SERVICE] Uploading image {}/{} as unpublished: {}", i + 1, imageUrls.size(), imageUrl);
+                
+                String endpoint = String.format("%s/%s/%s/photos", facebookBaseUrl, facebookApiVersion, pageId);
+                
+                // Build form data payload with published=false
+                String payload = "url=" + URLEncoder.encode(imageUrl, "UTF-8") +
+                               "&published=false" +
+                               "&access_token=" + URLEncoder.encode(pageToken, "UTF-8");
+                
+                // Add appsecret_proof if app secret is configured
+                if (facebookAppSecret != null && !facebookAppSecret.isEmpty()) {
+                    String appsecretProof = generateAppSecretProof(pageToken, facebookAppSecret);
+                    payload += "&appsecret_proof=" + appsecretProof;
+                }
+                
+                URL url = new URL(endpoint);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("POST");
+                conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                conn.setDoOutput(true);
+                conn.setConnectTimeout(10000);
+                conn.setReadTimeout(30000);
+                
+                try (OutputStream os = conn.getOutputStream()) {
+                    byte[] input = payload.getBytes(StandardCharsets.UTF_8);
+                    os.write(input, 0, input.length);
+                }
+                
+                int responseCode = conn.getResponseCode();
+                
+                if (responseCode >= 200 && responseCode < 300) {
+                    try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
+                        StringBuilder response = new StringBuilder();
+                        String line;
+                        while ((line = br.readLine()) != null) {
+                            response.append(line);
+                        }
+                        
+                        String responseBody = response.toString();
+                        logger.info("[SERVICE] Facebook unpublished photo response: {}", responseBody);
+                        
+                        // Extract media ID
+                        String mediaId = extractMediaId(responseBody);
+                        if (mediaId != null) {
+                            mediaIds.add(mediaId);
+                            logger.info("[SERVICE] Uploaded image {}/{} - Media ID: {}", i + 1, imageUrls.size(), mediaId);
+                        } else {
+                            logger.error("[SERVICE] Failed to extract media ID from response");
+                            return null;
+                        }
+                    }
+                } else {
+                    try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getErrorStream(), StandardCharsets.UTF_8))) {
+                        StringBuilder errorResponse = new StringBuilder();
+                        String line;
+                        while ((line = br.readLine()) != null) {
+                            errorResponse.append(line);
+                        }
+                        logger.error("[SERVICE] Failed to upload unpublished photo: HTTP {} - {}", responseCode, errorResponse.toString());
+                    }
+                    return null;
+                }
+            }
+            
+            // Step 2: Create feed post with attached media
+            logger.info("[SERVICE] Creating feed post with {} attached media IDs", mediaIds.size());
+            
+            String feedEndpoint = String.format("%s/%s/%s/feed", facebookBaseUrl, facebookApiVersion, pageId);
+            String fullMessage = title + "\n\n" + message;
+            if (linkUrl != null && !linkUrl.isEmpty()) {
+                fullMessage += "\n\n" + linkUrl;
+            }
+            
+            // Build form data with attached_media array
+            StringBuilder feedPayload = new StringBuilder();
+            feedPayload.append("message=").append(URLEncoder.encode(fullMessage, "UTF-8"));
+            
+            for (int i = 0; i < mediaIds.size(); i++) {
+                feedPayload.append("&attached_media[").append(i).append("]=")
+                          .append(URLEncoder.encode("{\"media_fbid\":\"" + mediaIds.get(i) + "\"}", "UTF-8"));
+            }
+            
+            feedPayload.append("&access_token=").append(URLEncoder.encode(pageToken, "UTF-8"));
+            
+            // Add appsecret_proof if app secret is configured
+            if (facebookAppSecret != null && !facebookAppSecret.isEmpty()) {
+                String appsecretProof = generateAppSecretProof(pageToken, facebookAppSecret);
+                feedPayload.append("&appsecret_proof=").append(appsecretProof);
+            }
+            
+            URL url = new URL(feedEndpoint);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            conn.setDoOutput(true);
+            conn.setConnectTimeout(10000);
+            conn.setReadTimeout(30000);
+            
+            try (OutputStream os = conn.getOutputStream()) {
+                byte[] input = feedPayload.toString().getBytes(StandardCharsets.UTF_8);
+                os.write(input, 0, input.length);
+            }
+            
+            int responseCode = conn.getResponseCode();
+            
+            if (responseCode >= 200 && responseCode < 300) {
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
+                    StringBuilder response = new StringBuilder();
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        response.append(line);
+                    }
+                    
+                    String responseBody = response.toString();
+                    logger.info("[SERVICE] Facebook /feed response: {}", responseBody);
+                    return extractExternalId(responseBody);
+                }
+            } else {
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getErrorStream(), StandardCharsets.UTF_8))) {
+                    StringBuilder errorResponse = new StringBuilder();
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        errorResponse.append(line);
+                    }
+                    logger.error("[SERVICE] Failed to publish Facebook feed post: HTTP {} - {}", responseCode, errorResponse.toString());
+                }
+                return null;
+            }
+            
+        } catch (Exception e) {
+            logger.error("[SERVICE] Error publishing Facebook multiple images", e);
+            return null;
+        }
+    }
+    
+    /**
+     * Extract media ID from Facebook photo upload response.
+     * Response format: {"id":"mediaId"}
+     */
+    private String extractMediaId(String responseBody) {
+        if (responseBody == null || responseBody.isEmpty()) {
+            return null;
+        }
+        
+        try {
+            if (responseBody.contains("\"id\"")) {
+                int idStart = responseBody.indexOf("\"id\":\"") + 6;
+                int idEnd = responseBody.indexOf("\"", idStart);
+                if (idStart > 5 && idEnd > idStart) {
+                    return responseBody.substring(idStart, idEnd);
+                }
+            }
+        } catch (Exception e) {
+            logger.error("[SERVICE] Error parsing media ID from response: {}", e.getMessage());
+        }
+        
+        return null;
+    }
+    
+    /**
+     * Generate appsecret_proof for Facebook API calls.
+     * HMAC-SHA256 hash of access_token using app secret as key.
+     */
+    private String generateAppSecretProof(String accessToken, String appSecret) {
+        try {
+            javax.crypto.Mac mac = javax.crypto.Mac.getInstance("HmacSHA256");
+            javax.crypto.spec.SecretKeySpec secretKeySpec = new javax.crypto.spec.SecretKeySpec(
+                appSecret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
+            mac.init(secretKeySpec);
+            byte[] hash = mac.doFinal(accessToken.getBytes(StandardCharsets.UTF_8));
+            
+            // Convert to hex string
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hash) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        } catch (Exception e) {
+            logger.error("[SERVICE] Error generating appsecret_proof", e);
+            return "";
         }
     }
     

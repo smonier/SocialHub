@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Bnd-LastModified: 1765447428172
+Bnd-LastModified: 1765529619717
 Build-Jdk-Spec: 17
 Bundle-Category: jahia-module
 Bundle-Description: This is the custom ReactJS module (SocialHub UI Exte
@@ -13,9 +13,9 @@ Bundle-Version: 1.0.0.SNAPSHOT
 Created-By: Apache Maven Bundle Plugin 5.1.9
 Dynamic-ImportPackage: *
 Git-branch: main
-Git-commit-desc: first commit
-Git-last-commit-id: 9a7eed2037544306f1ecd6c11e05685cb5528007
-Git-last-commit-time: 2025-12-11T10:54:45+0100
+Git-commit-desc: updated screenshot
+Git-last-commit-id: 9a146d3cd84f23ab715d3105ac247c4965e4deb6
+Git-last-commit-time: 2025-12-11T11:26:13+0100
 Implementation-Title: SocialHub UI Extension
 Implementation-URL: http://www.jahia.com
 Implementation-Vendor: Jahia Solutions Group SA
@@ -81,7 +81,7 @@ Require-Capability: com.jahia.services.content;filter:="(nodetypes=jmix:
  e,osgi.service;filter:="(objectClass=org.jahia.services.scheduler.Sched
  ulerService)";effective:=active,osgi.extender;filter:="(&(osgi.extender
  =osgi.component)(version>=1.4.0)(!(version>=2.0.0)))",osgi.ee;filter:="
- (&(osgi.ee=JavaSE)(version=10))"
+ (&(osgi.ee=JavaSE)(version=11))"
 Service-Component: OSGI-INF/org.example.socialhub.jobs.SocialMetricsJob.
  xml,OSGI-INF/org.example.socialhub.jobs.SocialPublishJob.xml,OSGI-INF/o
  rg.example.socialhub.rules.SocialHubGlobalObject.xml,OSGI-INF/org.examp

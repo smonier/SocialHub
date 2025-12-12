@@ -32,6 +32,12 @@ A comprehensive Jahia module for managing social media posts with OAuth authenti
 - `publishDueScheduledPosts()` - Scans for and publishes scheduled posts that are due
 - `getScheduledPosts(startDate, endDate)` - Retrieves posts scheduled in a date range
 - Uses stored OAuth tokens from JCR accounts
+- **Image Posting:**
+  - Resolves `social:imageRefs` weak references to JCR nodes
+  - Builds public URLs: `{serverBaseUrl}/files/live{imagePath}`
+  - Facebook single image via `/photos` endpoint
+  - Facebook multiple images via unpublished photos + `/feed` with `attached_media[]`
+  - Includes `appsecret_proof` for Facebook API security (HMAC-SHA256)
 
 #### SocialMetricsService
 - `refreshMetricsForPublishedPosts()` - Updates analytics for all published posts
@@ -219,6 +225,9 @@ facebook.scopes=pages_show_list,pages_manage_posts,pages_read_engagement
 Edit `org.example.socialhub.servlet.SocialProxyServlet.cfg`:
 
 ```properties
+# Server Configuration
+serverBaseUrl=https://yourserver.com
+
 # API Base URLs
 facebookBaseUrl=https://graph.facebook.com
 instagramBaseUrl=https://graph.facebook.com
@@ -228,14 +237,22 @@ linkedinBaseUrl=https://api.linkedin.com
 facebookApiVersion=v24.0
 linkedinApiVersion=v2
 
-# Platform IDs (for posting)
+# Facebook Configuration
 facebookPageId=YOUR_PAGE_ID
-instagramAccountId=YOUR_INSTAGRAM_ACCOUNT_ID
-linkedinOrganizationId=YOUR_LINKEDIN_ORG_ID
-
-# Fallback tokens (prefer OAuth flow)
+facebookAppSecret=YOUR_APP_SECRET
 facebookPageAccessToken=YOUR_TOKEN
+
+# Instagram Configuration
+instagramAccountId=YOUR_INSTAGRAM_ACCOUNT_ID
+
+# LinkedIn Configuration
+linkedinOrganizationId=YOUR_LINKEDIN_ORG_ID
 ```
+
+**Important Configuration Notes:**
+- `serverBaseUrl` - Base URL of your Jahia instance for building public image URLs
+- `facebookAppSecret` - Required for generating `appsecret_proof` security parameter
+- Tokens in config are fallback; prefer OAuth tokens stored in JCR
 
 ### JCR Storage Paths
 
@@ -285,8 +302,7 @@ Jobs only run on processing servers (cluster-safe).
 
 3. Optional properties:
    - `social:linkUrl` - URL to attach
-   - `social:imageRefs` - Image references
-   - `social:tags` - Tags/keywords
+   - `social:imageRefs` - Multiple weak references to image nodes (type `jmix:image`)
    - `social:externalId` - Platform post ID (set after publishing)
 
 ### Accessing the UI
@@ -331,10 +347,14 @@ socialPostService.publishToPlatform(postNode, "linkedin", siteKey);
 **Publishing Flow:**
 1. Job/Service retrieves post node
 2. Fetches OAuth credentials from JCR account
-3. Builds platform-specific payload
-4. Posts to API (Graph API, LinkedIn API)
-5. Updates post with `social:externalId`
-6. Sets `social:status = "published"`
+3. Resolves image references (if any) to public URLs
+4. Builds platform-specific payload:
+   - **Facebook single image:** POST to `/{page-id}/photos` with `url`, `message`, `appsecret_proof`
+   - **Facebook multiple images:** Upload as unpublished photos, then POST to `/{page-id}/feed` with `attached_media[]`
+   - **LinkedIn:** POST to `/v2/ugcPosts` (images: planned)
+5. Posts to API (Graph API, LinkedIn API)
+6. Updates post with `social:externalId`
+7. Sets `social:status = "published"`
 
 ## GraphQL Queries
 
@@ -490,9 +510,10 @@ socialnt_account.social_accountId.ui.tooltip=Platform-specific account identifie
 
 ### API Security
 - Platform-specific security mechanisms:
-  - **Facebook:** App secret + appsecret_proof for API calls
+  - **Facebook:** App secret + `appsecret_proof` for API calls (HMAC-SHA256 hash of access token)
   - **LinkedIn:** OAuth 2.0 bearer tokens
 - Tokens retrieved from stored accounts, not config files
+- **Image Security:** Images must be publicly accessible (anonymous read) for social platforms to fetch them
 
 ### Best Practices
 - Rotate OAuth credentials regularly
@@ -531,11 +552,16 @@ socialnt_account.social_accountId.ui.tooltip=Platform-specific account identifie
 - Person URN format: `urn:li:person:{personId}`
 - Required header: `X-Restli-Protocol-Version: 2.0.0`
 
-### Facebook 🚧
+### Facebook ✅
 - OAuth configuration ready
-- Post publishing implemented
+- Text post publishing implemented
+- Image posting implemented:
+  - Single image via `/photos` endpoint
+  - Multiple images via unpublished photos + `/feed` with `attached_media[]`
+  - Generates `appsecret_proof` for API security (HMAC-SHA256)
+- Image URLs built from `serverBaseUrl + /files/live + imagePath`
 - Account storage (planned)
-- Page token management
+- Page token management (via config)
 
 ### Instagram 📋
 - Planned (uses Facebook OAuth)
@@ -544,7 +570,10 @@ socialnt_account.social_accountId.ui.tooltip=Platform-specific account identifie
 
 ## Roadmap
 
+- [x] Facebook image posting (single + multiple)
+- [x] Facebook appsecret_proof security
 - [ ] Complete Facebook OAuth account storage
+- [ ] Implement Instagram image posting (similar to Facebook)
 - [ ] Implement Instagram OAuth flow
 - [ ] Add LinkedIn insights API integration
 - [ ] Support image/video uploads for LinkedIn
@@ -552,6 +581,7 @@ socialnt_account.social_accountId.ui.tooltip=Platform-specific account identifie
 - [ ] UI for publishing posts directly from panel
 - [ ] Scheduled post editing in UI
 - [ ] Support LinkedIn organization posts
+- [ ] Image accessibility verification (public URL testing)
 
 ## License
 
